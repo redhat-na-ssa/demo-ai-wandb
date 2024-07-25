@@ -1,0 +1,33 @@
+schemaVersion: 2.1.0
+metadata:
+  name: wandb
+projects:
+  - name: wandb
+    git:
+      remotes:
+        origin: "https://github.com/redhat-na-ssa/demo-ai-wandb.git"
+      checkoutFrom:
+        revision: main
+components:
+  - name: tools
+    container:
+      image: quay.io/bkozdemb/udi-9
+      volumeMounts:
+        - name: venv
+          path: /home/user/.venv
+      memoryLimit: 4096Mi
+      mountSources: true
+
+  - name: venv
+    volume:
+      size: 10G
+
+commands:
+  - id: run-application
+    exec:
+      label: "Create the Python virtual environment"
+      component: tools
+      workingDir: ${PROJECT_SOURCE}
+      commandLine: "python3 -m venv .venv && source .venv/bin/activate && pip install pip -Uq && pip install -r src/requirements.txt"
+      group:
+        kind: run
